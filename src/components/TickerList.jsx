@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 function TickerList() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAlternateMessage, setShowAlternateMessage] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -11,12 +13,31 @@ function TickerList() {
         );
         const result_json = await result.json();
         setData(result_json);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false);
       }
     };
+
+    const timer = setTimeout(() => {
+      setShowAlternateMessage(true);
+    }, 5000);
+
     fetchData();
+
+    return () => clearTimeout(timer);
   }, []);
+
+  if (loading) {
+    return (
+      <div className="my-2 w-full  text-center text-white text-2xl">
+        {showAlternateMessage
+          ? "It may take a while to load as render free tier is used to Host API"
+          : "Loading..."}
+      </div>
+    );
+  }
 
   return (
     <div className="my-2 w-full overflow-hidden">
